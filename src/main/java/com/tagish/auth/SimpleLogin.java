@@ -1,10 +1,14 @@
 // $Id: SimpleLogin.java,v 1.5 2003/02/17 20:13:23 andy Exp $
 package com.tagish.auth;
 
+import java.util.Map;
+import java.io.*;
 import java.util.*;
 import java.security.Principal;
+import javax.security.auth.*;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.*;
+import javax.security.auth.spi.*;
 
 /**
  * Base class for a variety of simple login modules that simply authenticate
@@ -15,11 +19,11 @@ import javax.security.auth.login.*;
  */
 public abstract class SimpleLogin extends BasicLogin
 {
-	protected Vector			principals      = null;
-	protected Vector            pending         = null;
+	protected Vector	principals      = null;
+	protected Vector        pending         = null;
 
 	// the authentication status
-	protected boolean			commitSucceeded = false;
+	protected boolean	commitSucceeded = false;
 
 	/**
 	 * Validate a user's credentials and either throw a LoginException (if

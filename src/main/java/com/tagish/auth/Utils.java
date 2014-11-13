@@ -12,7 +12,7 @@ import java.security.*;
  */
 public class Utils
 {
-	private final static String     ALGORITHM   = "MD5";
+	private final static String     ALGORITHM   = "SHA-256";
 	private static MessageDigest    md = null;
 
 	/**
@@ -77,13 +77,8 @@ public class Utils
 		}
 	}
 
-
-    public static char[] cryptPassword(char pwd[]) throws Exception{
-        return cryptPassword(pwd,ALGORITHM);
-    }
-
-    /**
-	 * Perform hashing on the supplied password and return a char array
+	/**
+	 * Perform MD5 hashing on the supplied password and return a char array
 	 * containing the encrypted password as a printable string. The hash is
 	 * computed on the low 8 bits of each character.
 	 *
@@ -91,6 +86,10 @@ public class Utils
 	 * @return a character array containing a 32 character long hex encoded
 	 * MD5 hash of the password
 	 */
+    public static char[] cryptPassword(char pwd[]) throws Exception{
+        return cryptPassword(pwd,ALGORITHM);
+    }
+
 	public static char[] cryptPassword(char pwd[], String algorithm) throws Exception
 	{
 		if (null == md) { md = MessageDigest.getInstance(algorithm); }

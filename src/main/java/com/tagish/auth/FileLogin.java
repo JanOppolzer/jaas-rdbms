@@ -4,9 +4,11 @@ package com.tagish.auth;
 import java.util.Map;
 import java.io.*;
 import java.util.*;
+import java.security.Principal;
 import javax.security.auth.*;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.*;
+import javax.security.auth.spi.*;
 
 public class FileLogin extends SimpleLogin
 {

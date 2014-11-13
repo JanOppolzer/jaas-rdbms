@@ -19,7 +19,6 @@ public class TypedPrincipal implements Principal, Serializable
 	 */
 	protected String	name;
 	protected int		type;
-	static final protected long	serialVersionUID = 1234567894326643L;
 
 	/**
 	 * This <CODE>TypedPrincipal</CODE> represents a username or SID.
