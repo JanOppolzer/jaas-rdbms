@@ -1,15 +1,11 @@
-jaas-rdbms
+shibboleth-jaas-rdbms
 ==========
 
-JAAS authentication module using RDBMS as a backend
-
-= Compilation =
-
-./make
+A Shibboleth JAAS module for authentication module using RDBMS as a backend
 
 = Installtion =
 
-copy tagishauth.jar into /var/lib/tomcat/webapps/application/WEB-INF/lib/
+copy jaas-rdms.jar into your tomcat lib folder
 
 = Usage =
 

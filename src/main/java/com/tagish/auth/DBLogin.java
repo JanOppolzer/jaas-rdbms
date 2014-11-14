@@ -2,15 +2,11 @@
 package com.tagish.auth;
 
 import java.util.Map;
-import java.io.*;
 import java.util.*;
-import java.security.Principal;
 import java.sql.*;
-import java.math.*;
 import javax.security.auth.*;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.*;
-import javax.security.auth.spi.*;
 
 /**
  * Simple database based authentication module.
@@ -24,17 +20,15 @@ public class DBLogin extends SimpleLogin {
     protected String                dbUser;
     protected String                dbPassword;
     protected String                userTable;
-    protected String                roleMapTable;
-    protected String                roleTable;
     protected String                where;
     protected String                hashAlgorithm;
 
 
 
     protected synchronized Vector validateUser(String username, char password[]) throws LoginException{
-        ResultSet rsu = null, rsr = null;
+        ResultSet rsu = null;
         Connection con = null;
-        PreparedStatement psu = null, psr = null;
+        PreparedStatement psu = null;
 
         try {
             Class.forName(dbDriver);
@@ -44,15 +38,10 @@ public class DBLogin extends SimpleLogin {
                 con = DriverManager.getConnection(dbURL);
 
             psu = con.prepareStatement("SELECT UserID,Password FROM " + userTable + " WHERE UserName=?" + where);
-            psr = con.prepareStatement("SELECT " + roleTable + ".RoleName FROM " +
-                    roleMapTable + "," + roleTable +
-                    " WHERE " + roleMapTable + ".UserID=? AND " +
-                    roleMapTable + ".RoleID=" + roleTable + ".RoleID");
 
             psu.setString(1, username);
             rsu = psu.executeQuery();
             if (!rsu.next()) throw new FailedLoginException("Unknown user");
-            int uid = rsu.getInt(1);
             String upwd = rsu.getString(2);
             String tpwd = null;
             try {
@@ -63,10 +52,7 @@ public class DBLogin extends SimpleLogin {
             if (!upwd.equals(tpwd)) throw new FailedLoginException("Bad password upwd:" + upwd + " tpwd:" + tpwd);
             Vector p = new Vector();
             p.add(new TypedPrincipal(username, TypedPrincipal.USER));
-            psr.setInt(1, uid);
-            rsr = psr.executeQuery();
-            while (rsr.next())
-                p.add(new TypedPrincipal(rsr.getString(1), TypedPrincipal.GROUP));
+
             return p;
         } catch (ClassNotFoundException e) {
             throw new LoginException("Error reading user database (" + e.getMessage() + ")");
@@ -75,9 +61,7 @@ public class DBLogin extends SimpleLogin {
         } finally {
             try {
                 if (rsu != null) rsu.close();
-                if (rsr != null) rsr.close();
                 if (psu != null) psu.close();
-                if (psr != null) psr.close();
                 if (con != null) con.close();
             } catch (Exception e) { }
         }
@@ -96,8 +80,6 @@ public class DBLogin extends SimpleLogin {
             throw new Error("Either provide dbUser and dbPassword or encode both in dbURL");
 
         userTable    = getOption("userTable",    "Users");
-        roleMapTable = getOption("roleMapTable", "Users_Roles");
-        roleTable    = getOption("roleTable",    "Roles");
         where        = getOption("where",        "");
         hashAlgorithm =getOption("hashAlgorithm","SHA256");
 
