@@ -81,7 +81,7 @@ public class DBLogin extends SimpleLogin {
 
         userTable    = getOption("userTable",    "Users");
         where        = getOption("where",        "");
-        hashAlgorithm =getOption("hashAlgorithm","SHA256");
+        hashAlgorithm =getOption("hashAlgorithm","SHA-256");
 
         if (null != where && where.length() > 0)
             where = " AND " + where;
