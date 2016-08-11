@@ -22,6 +22,8 @@ public class DBLogin extends SimpleLogin {
     protected String                userTable;
     protected String                where;
     protected String                hashAlgorithm;
+    protected String                userColumn;
+    protected String                passColumn;
 
 
 
@@ -37,12 +39,12 @@ public class DBLogin extends SimpleLogin {
             else
                 con = DriverManager.getConnection(dbURL);
 
-            psu = con.prepareStatement("SELECT UserID,Password FROM " + userTable + " WHERE UserName=?" + where);
+            psu = con.prepareStatement("SELECT " + passColumn + " FROM " + userTable + " WHERE " + userColumn + "=?" + where);
 
             psu.setString(1, username);
             rsu = psu.executeQuery();
             if (!rsu.next()) throw new FailedLoginException("Unknown user");
-            String upwd = rsu.getString(2);
+            String upwd = rsu.getString(1);
             String tpwd = null;
             try {
                 tpwd = new String(Utils.cryptPassword(password,hashAlgorithm));
@@ -80,6 +82,8 @@ public class DBLogin extends SimpleLogin {
             throw new Error("Either provide dbUser and dbPassword or encode both in dbURL");
 
         userTable    = getOption("userTable",    "Users");
+        userColumn   = getOption("userColumn", "user_name");
+        passColumn   = getOption("passColumn", "user_password");
         where        = getOption("where",        "");
         hashAlgorithm =getOption("hashAlgorithm","SHA-256");
 
