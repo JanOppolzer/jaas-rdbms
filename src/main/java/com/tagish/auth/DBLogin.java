@@ -7,6 +7,8 @@ import java.sql.*;
 import javax.security.auth.*;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Simple database based authentication module.
@@ -21,7 +23,6 @@ public class DBLogin extends SimpleLogin {
     protected String                dbPassword;
     protected String                userTable;
     protected String                where;
-    protected String                hashAlgorithm;
     protected String                userColumn;
     protected String                passColumn;
 
@@ -46,12 +47,30 @@ public class DBLogin extends SimpleLogin {
             if (!rsu.next()) throw new FailedLoginException("Unknown user");
             String upwd = rsu.getString(1);
             String tpwd = null;
+            String hpwd = null;
+            String hAlg = null;
+            String hash = null;
             try {
-                tpwd = new String(Utils.cryptPassword(password,hashAlgorithm));
+                Pattern p = Pattern.compile("^\\{[A-Za-z0-9\\-]+\\}");
+                Matcher m = p.matcher(upwd);
+                while (m.find()) {
+                    String s = m.group();
+                    int l = s.length();
+                    l -= 1;
+                    hAlg = s.substring(1,l);
+                    hash = m.replaceFirst ("");
+                }
+            } catch (Exception e) {
+                throw new LoginException ("Error reading password (" + e.getMessage() + ")");
+            }
+            try {
+                tpwd = "{" + hAlg + "}";
+                hpwd = new String(Utils.cryptPassword(password,hAlg));
+                tpwd = tpwd.concat(hpwd);
             } catch (Exception e) {
                 throw new LoginException("Error encoding password (" + e.getMessage() + ")");
             }
-            if (!upwd.equals(tpwd)) throw new FailedLoginException("Incorrect password");
+            if (!upwd.equals(tpwd)) throw new FailedLoginException("Incorrect password, hAlg: " + hAlg + ", hash: " + hash + ", password: " + hpwd);
             Vector p = new Vector();
             p.add(new TypedPrincipal(username, TypedPrincipal.USER));
 
@@ -85,7 +104,6 @@ public class DBLogin extends SimpleLogin {
         userColumn   = getOption("userColumn", "user_name");
         passColumn   = getOption("passColumn", "user_password");
         where        = getOption("where",        "");
-        hashAlgorithm =getOption("hashAlgorithm","SHA-256");
 
         if (null != where && where.length() > 0)
             where = " AND " + where;
