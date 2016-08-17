@@ -70,7 +70,7 @@ public class DBLogin extends SimpleLogin {
             } catch (Exception e) {
                 throw new LoginException("Error encoding password (" + e.getMessage() + ")");
             }
-            if (!upwd.equals(tpwd)) throw new FailedLoginException("Incorrect password, hAlg: " + hAlg + ", hash: " + hash + ", password: " + hpwd);
+            if (!upwd.equals(tpwd)) throw new FailedLoginException("Incorrect password");
             Vector p = new Vector();
             p.add(new TypedPrincipal(username, TypedPrincipal.USER));
 

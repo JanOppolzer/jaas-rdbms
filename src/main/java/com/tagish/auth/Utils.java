@@ -92,7 +92,7 @@ public class Utils
 
 	public static char[] cryptPassword(char pwd[], String algorithm) throws Exception
 	{
-		if (null == md) { md = MessageDigest.getInstance(algorithm); }
+		md = MessageDigest.getInstance(algorithm);
 		md.reset();
 		byte pwdb[] = new byte[pwd.length];
 		for (int b = 0; b < pwd.length; b++) {
